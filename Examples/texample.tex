@@ -1,0 +1,118 @@
+%\documentclass[10pt,a4paper]{article}
+\documentclass[runningheads]{llncs}
+\usepackage{blindtext}
+\usepackage{lipsum}
+\usepackage{xstring}
+% https://tex.stackexchange.com/a/26808/2595
+\makeatletter
+\def\unpacklipsum#1#2#3{%
+	\count@=#1\relax
+	\advance\count@\m@ne
+	\def#3{}%
+	\loop\ifnum\count@<#2\relax
+	\advance\count@\@ne
+	\edef#3{#3\csname lipsum@\romannumeral\count@\endcsname}%
+	\repeat}
+\makeatother
+
+\def\loremnchars[#1]#2{%
+	\unpacklipsum{#1}{#1}{\myunpacked}%
+	\StrMid{\myunpacked}{1}{#2}% same as \StrLeft{\myunpacked}{#2}
+}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[colorlinks=true,citecolor=black,linkcolor=black,filecolor=magenta,urlcolor=cyan]{hyperref}
+\begin{document}
+	% paste in titling stuff
+	\title{Contribution Title\thanks{Supported by organization x.}}
+	%
+	%\titlerunning{Abbreviated paper title}
+	% If the paper title is too long for the running head, you can set
+	% an abbreviated paper title here
+	%
+	\author{First Author\inst{1}\orcidID{0000-1111-2222-3333} \and
+		Second Author\inst{2,3}\orcidID{1111-2222-3333-4444} \and
+		Third Author\inst{3}\orcidID{2222--3333-4444-5555}}
+	%
+	\authorrunning{F. Author et al.}
+	% First names are abbreviated in the running head.
+	% If there are more than two authors, 'et al.' is used.
+	%
+	\institute{Princeton University, Princeton NJ 08544, USA \and
+		Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
+		\email{lncs@springer.com}\\
+		\url{http://www.springer.com/gp/computer-science/lncs} \and
+		ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
+		\email{\{abc,lncs\}@uni-heidelberg.de}}
+	%
+	\maketitle              % typeset the header of the contribution
+	%
+	
+	\begin{abstract}\loremnchars[3]{200}\keywords{First keyword  \and Second keyword \and Another keyword.} \end{abstract}
+%	\tableofcontents
+	\section{Text Modifiers}
+	Try typing:
+	\begin{itemize}
+	\item\begin{verbatim*}\emph{}\end{verbatim*} for italics
+	\item\begin{verbatim*}\textbf{}\end{verbatim*} for bold
+	\item\begin{verbatim*}\textsc{}\end{verbatim*} for small caps
+	\end{itemize}
+	\blindtext
+\section{\LaTeX   Math}
+Math can be delimited by \$ signs, or in special math environments! Lets try doing \emph{inline math}, \emph{display style math}, and a \emph{multiline} math environment. 
+\subsection{Doing Math}
+\loremnchars[5]{14}  
+% $\sum{\alpha^{\frac{\pi}{\sin{e}}}}$ 
+\loremnchars[5]{255}
+
+%$\dot { \omega } _ { n } ^ { \prime \prime }$, the source term is defined as:
+% or do naver stokes
+% try $$ and begin equation
+% $$\dot { \omega } _ { n } ^ { \prime \prime } = \frac { 1 } { N _ { A } } \left[ \frac { 2 } { C _ { \min } } N _ { A } k _ { 1 } ( T ) \left[ C _ { 2 } H _ { 2 } \right] - 2 C _ { a } \left( \frac { 6 M _ { s } } { \pi \rho _ { s } } \right) ^ { 1 / 6 } \left( \frac { 6 \kappa T } { \rho _ { s } } \right) ^ { 1 / 2 } C _ { s } ^ { 1 / 6 } [ \rho n ] ^ { 11 / 6 } \right] \left[ \frac { k m o l } { m ^ { 3 } * s } \right]$$
+
+Our Hypothesis can be defined as:
+% Use Align environment!
+
+\section{Tables}
+\begin{table}[H]
+	\caption{A table}
+	\label{tb:something}
+	\begin{center}
+\begin{tabular}{llr}  
+	\toprule
+	\multicolumn{2}{c}{Item} \\
+	\cmidrule(r){1-2}
+	Animal    & Description & Price (\$) \\
+	\midrule
+	Gnat      & per gram    & 13.65      \\
+	&    each     & 0.01       \\
+	Gnu       & stuffed     & 92.50      \\
+	Emu       & stuffed     & 33.33      \\
+	Armadillo & frozen      & 8.99       \\
+	\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+\section{Figures}
+\begin{figure}[H]
+	\label{fig:another}
+	\begin{center}
+		\includegraphics[scale=.2]{Logo}
+	\end{center}
+\caption{The SMU Logo}
+	\end{figure}
+\section{Cross Referencing and Table of Contents!}
+ In Table \ref{tb:something} we see something. \\ In Figure \ref{fig:another}, we see another thing
+ \section{Citations}
+ This was a work of spending hours combing through the knitr \cite{knitr} documentation
+  \bibliographystyle{splncs04}
+  \bibliography{thebib}
+ 
+
+  
+\end{document}
