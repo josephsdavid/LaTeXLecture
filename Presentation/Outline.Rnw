@@ -1,0 +1,61 @@
+\documentclass[english]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage[titles]{tocloft}
+\renewcommand{\cftdot}{}
+\usepackage{fontspec}
+\setmainfont[Mapping=tex-text]{Gill Sans MT}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{fancybox}
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{subfloat}
+\usepackage{graphicx}
+\usepackage{amsmath}
+%\RequirePackage{color}
+%\RequirePackage[svgnames]{xcolor}
+%\definecolor{spYellow}{HTML}{ADAD00}
+\RequirePackage{listings}
+\usepackage{longtable}
+\usepackage{array,booktabs}
+\usepackage{bm}
+\usepackage{outlines}
+\usepackage{newfloat}
+\usepackage{caption}
+\DeclareFloatingEnvironment[fileext=frm,placement={!ht},name=Code]{Code}
+\captionsetup[Code]{labelfont=bf}
+\usepackage[font=small,format=plain,labelsep=period,
+labelfont=bf, justification=centerlast]{caption}
+% With this, we do \begin{Code} \caption{Code name} \ref{whatever} \begin{SAS or R} \end{SAS or R} \end{Code} to get the code in the TOC!
+
+% Now we make an environment for coding in SAS
+% We are going to build a new listings (code) environment!
+
+\usepackage{babel}
+\usepackage{pdfpages}
+\usepackage{tikz}
+\usepackage[buttonsize=1em]{animate}
+\usepackage[colorlinks=true,citecolor=blue,linkcolor=blue,filecolor=magenta,urlcolor=cyan]{hyperref}
+
+\begin{document}
+	% !Rnw weave = knitr
+	% !TeX program = xelatex
+	%First we define our chunk settings
+	
+	\begin{outline}[enumerate]
+		\1 Overview of Presentation
+			\2 Primer on \LaTeX
+			\2 A quick and dirty \LaTeX workflow for MSDS
+			\2 A simple reproducible \LaTeX workflow
+		\1 Latex Primer
+		\2 What is \LaTeX
+		\2 Why \LaTeX
+		\2 \LaTeX demo
+			\3 follow the SMU latex demo, add in mathpix
+		\1 quick and dirty
+		\2 do my stats homework before the test basically
+		\1 reproducible workflow
+		\2 knitr gains, xtable tikz engines python animations (for clustering!)
+		\end{outline}
+	
+	\end{document}

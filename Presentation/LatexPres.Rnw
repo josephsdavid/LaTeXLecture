@@ -1,0 +1,256 @@
+\documentclass{beamer}
+\usepackage{blindtext}
+\usepackage{longtable}
+\usepackage{array,booktabs}
+\usepackage{tikz}
+\usepackage{animate}
+\usepackage{outlines}
+\usetheme{Execushares}
+
+\title{A \LaTeX Workflow for MSDS}
+\subtitle{An easy way to quickly get something nice to turn in}
+\author{David Josephs}
+\date{\today}
+
+\setcounter{showSlideNumbers}{1}
+
+\begin{document}
+	<<settings, echo=FALSE, message=FALSE>>=
+	library(knitr)
+	library(ggplot2)
+	library(tidyverse)
+	library(broom)
+	library(xtable)
+	library(investr)
+	library(animation)
+	library(htmltab)
+	library(SASmarkdown)
+	library(XML)
+	sas_enginesetup(sashtml=sashtml)
+	sasexe <- "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"
+	sasopts <- "-nosplash -ls 75"
+	opts_chunk$set(cache=T, autodep=TRUE)
+	opts_chunk$set()
+	opts_chunk$set(fig.width=3)
+	opts_chunk$set(fig.height=2.5)
+	#opts_chunk$set(background='white')
+	options(tikzDefaultEngine='xetex')
+	aniopts='controls,autoplay,loop'
+	@
+	\setcounter{showProgressBar}{0}
+	\setcounter{showSlideNumbers}{0}
+
+	\frame{\titlepage}
+
+	\begin{frame}
+		\frametitle{Contents}
+		\begin{enumerate}[<+->]
+			\item Introduction to \LaTeX \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Reasons to give up Word forever, bibtex, and demonstrations}
+			\item A Single-Source \LaTeX Workflow  \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Integrating code and analysis into \LaTeX}
+		\end{enumerate}
+	\end{frame}
+
+	\setcounter{framenumber}{0}
+	\setcounter{showProgressBar}{1}
+	\setcounter{showSlideNumbers}{1}
+	\section{\LaTeX Primer}
+		\begin{frame}
+			\frametitle{What is \LaTeX?}
+			\begin{outline}
+\1 Document Preparation System
+\2 Typesetting
+			\end{outline}
+		\end{frame}
+
+		\begin{frame}
+			\frametitle{Why \LaTeX?}
+\begin{itemize}[<+->]
+		\item Word is the worst
+		\begin{itemize}
+		\item Reproducibility
+		\item Figures and tables
+		\end{itemize}
+		\item Separate style and body
+		\item Control issues
+		\begin{itemize}
+		\item Ligatures
+		\item Manipulate everything
+		\end{itemize}
+\end{itemize}
+		\end{frame}
+\begin{frame}
+\frametitle{Using \LaTeX}
+Recommendations for installation:
+\begin{itemize}[<+->]
+	\item \TeX distributions
+	\begin{itemize} \item Mac: MacTEX
+	\item Windows: MiKTeX or proTeXt
+	\item Linux: \TeX  or TeXLive \end{itemize}
+	\item \LaTeX editors
+	\begin{itemize}
+	\item LyX and Overleaf
+	\item Mac: Texpad
+	\item Windows: TeXStudio 
+	\item Linux: TeXStudio
+	\end{itemize}
+	\end{itemize}
+\end{frame}
+\begin{frame}
+\frametitle{Demonstration}
+\begin{itemize}[<+->]
+	\item{Creating a .tex file}
+	\begin{itemize}
+		\item Preamble (document class + package loading)
+		\item Body
+	\end{itemize}
+\item \emph{Italics}, \textbf{Bold}, and \textsc{Small Cap}
+\item{Sectioning and TOC}
+\item{Math and mathpix}
+\item Tables
+\item Figures
+\item Cross-References
+\item Bibliography
+\item Templates!
+\end{itemize}
+\end{frame}
+	\section{Reproducible Research Using \LaTeX}
+		\begin{frame}
+			\frametitle{A Workflow Using knitr and \LaTeX}
+			\begin{itemize}[<+->]
+				\item .Rnw file extension
+				\item Normal LaTeX preamble
+				\item Set knitr chunk and engine options
+				\item .Rnw $\rightarrow$ .tex $\rightarrow$ .pdf
+			\end{itemize}
+		\end{frame}
+\begin{frame}
+\frametitle{Chunky}
+Chunk name and options are defined by '<< chunk name and options>> ' , followed by '=', then your code is included, then the chunk is punctuated with an '@'.
+\end{frame}
+		\begin{frame}
+\frametitle{Making tables with knitr}
+To make a table, you say chunk results='asis', and print an xtable
+\end{frame}
+		\begin{frame}
+\frametitle{Making tables with knitr | Example}
+<<slide8,results='asis', warning=F>>=
+WheatEater<- read.csv("Data/Wheateater.csv")
+
+model1 <-lm(Tcell~Mass,data=WheatEater)
+
+table1<-xtable(model1,
+label='tb:model1',
+
+caption="Results of the Model")
+
+print(table1,booktabs=T,table.placement='H')
+@
+\end{frame}
+		\begin{frame}
+\frametitle{Making figures with knitr}
+To make a beautiful figure, you set your device to tikz (dev='tikz'), which produces an amazing, non-rasterized figure. Note on the first run through, this can take a while, which is why we cache our output.
+\end{frame}
+		\begin{frame}
+\frametitle{Making figures with knitr | Example}
+<<respp>>=
+resp<-ggplot(model1, aes(.fitted,.resid))
+@
+And so on. The next slide contains just basic ggplot output, but compiled using tikz into the pdf (with a surprise). 
+\end{frame}
+\begin{frame}
+\frametitle{Making figures with knitr | Example}
+\begin{figure}[H]
+	\caption{An animated plot from ggplot2, in PDF form}
+<<plot1,dev='tikz',echo=F,fig.show='animate'>>=
+resp<-resp+geom_point(aes(color = .resid))
+resp
+resp<-resp+scale_color_gradient2(low = "blue",mid = "gray",high ="red")+guides(color = FALSE)
+resp
+resp<-resp+stat_smooth(method="lm",se=F)+geom_hline(yintercept=0,col="red",linetype="dashed")
+resp
+resp<-resp+xlab("Fitted values")+ylab("Residuals")
+resp
+resp<-resp+theme_classic()+geom_segment(aes(y=0,x=.fitted,xend=.fitted, yend=.resid,alpha = 2*abs(.resid)))+guides(alpha=FALSE)
+resp
+@
+\end{figure}
+\end{frame}
+		\begin{frame}
+			\frametitle{Integrating SAS}
+			Integrating SAS is super easy. 
+			\begin{itemize}[<+->]
+				\item engine = 'sashtml'
+				\begin{itemize}
+					\item enginepath = sasexe
+					\item engineopts = sasopts
+				\end{itemize}
+			\item SAS figures are exported as PNGs
+			\begin{itemize}
+				\item Call those in \LaTeX
+			\end{itemize}
+		\item SAS tables are exported as HTML
+		\begin{itemize}
+			\item Call with R library XML
+			\item Print with xtable
+		\end{itemize}
+	\item SAS code does not save between chunks
+	\begin{itemize}
+		\item Clever echos
+	\end{itemize}
+		\end{itemize}
+		\end{frame}
+\begin{frame}
+\frametitle{SAS Example}
+<<sasassraw, engine="sashtml", engine.path=sasexe, engine.opts=sasopts,results='hide',echo=-(1:11)>>=
+ods html path="c:\Users\david\Desktop\MSDS\MSDS6371\Homework\Week11\SASout" gpath="SASout"
+STYLE=STATISTICAL  body="sasass.html";
+PROC IMPORT DATAFILE="c:\Users\david\Desktop\MSDS\MSDS6371\Homework\Week11\Data\Metabolism.csv"
+OUT=metabolism
+DBMS=CSV
+REPLACE;
+data powermetabolism;
+set metabolism;
+powerMass=Mass**(3/4);
+Metab=Metab;
+run;
+proc glm data=powermetabolism plots=all alpha=.05;
+model Metab=powerMass / CLPARM;
+run;
+@
+\end{frame}
+\begin{frame}
+\frametitle{SAS Example}
+ Alternatives For SAS University Edition
+\begin{figure}[H]
+	\label{fig:SASdiagraw}
+	\begin{center}
+		\includegraphics[scale=.25]{SASout/sasassraw.png}
+	\end{center}
+\caption{Diagnostic Plots on the Raw Metabolism Data}
+\end{figure}
+\end{frame}
+\begin{frame}
+\frametitle{Other Languages}
+Knitr and LaTeX have full support of Python, C++, C, Java, and you can really easily add your own. I know python can be saved across chunks, and works with tikz
+\end{frame}
+	\section{Conclusions}
+		\begin{frame}
+			\frametitle{Closing Thoughts}
+			\begin{itemize}[<+->]
+				\item Don't use Word
+				\item \LaTeX is fun
+			\end{itemize}
+		\end{frame}
+\begin{frame}
+\frametitle{Questions}
+Thank you! 
+\end{frame}
+	\appendix
+	\backupbegin
+	  \begin{frame}
+	    \frametitle{Backup slide 1}
+	    \blindtext
+	  \end{frame}
+	\backupend
+
+\end{document}

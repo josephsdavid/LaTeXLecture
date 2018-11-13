@@ -1,0 +1,123 @@
+%!TEX program = xelatex
+\documentclass{beamer}
+\usepackage{blindtext}
+\usepackage{outlines}
+\usetheme{Execushares}
+
+\title{A \LaTeX Workflow for MSDS}
+\subtitle{An easy way to quickly get something nice to turn in}
+\author{David Josephs}
+\date{\today}
+
+\setcounter{showSlideNumbers}{1}
+
+\begin{document}
+	\setcounter{showProgressBar}{0}
+	\setcounter{showSlideNumbers}{0}
+
+	\frame{\titlepage}
+
+	\begin{frame}
+		\frametitle{Contents}
+		\begin{enumerate}[<+->]
+			\item Introduction to \LaTeX \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Reasons to give up Word forever, bibtex, and demonstrations}
+			\item A Single-Source \LaTeX Workflow  \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Integrating code and analysis into \LaTeX}
+		\end{enumerate}
+	\end{frame}
+
+	\setcounter{framenumber}{0}
+	\setcounter{showProgressBar}{1}
+	\setcounter{showSlideNumbers}{1}
+	\section{\LaTeX Primer}
+		\begin{frame}
+			\frametitle{What is \LaTeX?}
+			\begin{outline}
+\1 Document Preparation System
+\2 Typesetting
+			\end{outline}
+		\end{frame}
+
+		\begin{frame}
+			\frametitle{Why \LaTeX?}
+\begin{itemize}[<+->]
+		\item Word is the worst
+		\begin{itemize}
+		\item Reproducibility
+		\item Figures and tables
+		\end{itemize}
+		\item Separate style and body
+		\item Control issues
+		\begin{itemize}
+		\item Ligatures
+		\item Manipulate everything
+		\end{itemize}
+\end{itemize}
+		\end{frame}
+\begin{frame}
+\frametitle{Using \LaTeX}
+Recommendations for installation:
+\begin{itemize}[<+->]
+	\item \TeX distributions
+	\begin{itemize} \item Mac: MacTEX
+	\item Windows: MiKTeX or proTeXt
+	\item Linux: \TeX  or TeXLive \end{itemize}
+	\item \LaTeX editors
+	\begin{itemize}
+	\item LyX and Overleaf
+	\item Mac: Texpad
+	\item Windows: TeXStudio 
+	\item Linux: TeXStudio
+	\end{itemize}
+	\end{itemize}
+\end{frame}
+\begin{frame}
+\frametitle{Demonstration}
+\begin{itemize}[<+->]
+	\item{Creating a .tex file}
+	\begin{itemize}
+		\item Preamble (document class + package loading)
+		\item Body
+	\end{itemize}
+\item \emph{Italics}, \textbf{Bold}, and \textsc{Small Cap}
+\item{Sectioning and TOC}
+\item{Math and mathpix}
+\item Tables
+\item Figures
+\item Cross-References
+\item Bibliography
+\item Templates!
+\end{itemize}
+\end{frame}
+	\section{Reproducible Research Using \LaTeX}
+		\begin{frame}
+			\frametitle{Lorem 1}
+			\blindtext
+		\end{frame}
+
+		\begin{frame}
+			\frametitle{Lorem 2}
+			\blindtext
+		\end{frame}
+
+		\begin{frame}
+			\frametitle{Lorem 3}
+			\blindtext
+		\end{frame}
+
+	\section{Conclusions}
+		\begin{frame}
+			\frametitle{Closing Thoughts}
+			\begin{itemize}
+				\item Woo, Beamer!
+			\end{itemize}
+		\end{frame}
+	
+	\appendix
+	\backupbegin
+	  \begin{frame}
+	    \frametitle{Backup slide 1}
+	    \blindtext
+	  \end{frame}
+	\backupend
+
+\end{document}
