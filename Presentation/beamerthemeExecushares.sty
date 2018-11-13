@@ -34,8 +34,8 @@
 %\usepackage{sourcecodepro}
 
 % set colours
-\setbeamercolor{itemize item}{fg=ExecusharesBlue}
-\setbeamercolor{enumerate item}{fg=ExecusharesBlue}
+\setbeamercolor{itemize item}{fg=ExecusharesRed}
+\setbeamercolor{enumerate item}{fg=ExecusharesRed}
 \setbeamercolor{alerted text}{fg=ExecusharesBlue}
 \setbeamercolor{section in toc}{fg=ExecusharesBlack}
 
@@ -48,17 +48,17 @@
 % make the itemize bullets pixelated >
 \setbeamertemplate{itemize item}{
 	\tikz{
-		\draw[fill=ExecusharesBlue,draw=none] (0, 0) rectangle(0.1, 0.1);
-		\draw[fill=ExecusharesBlue,draw=none] (0.1, 0.1) rectangle(0.2, 0.2);
-		\draw[fill=ExecusharesBlue,draw=none] (0, 0.2) rectangle(0.1, 0.3);
+		\draw[fill=ExecusharesRed,draw=none] (0, 0) rectangle(0.1, 0.1);
+		\draw[fill=ExecusharesRed,draw=none] (0.1, 0.1) rectangle(0.2, 0.2);
+		\draw[fill=ExecusharesRed,draw=none] (0, 0.2) rectangle(0.1, 0.3);
 	}
 }
 % make the subitems also pixelated >, but a little smaller and red
 \setbeamertemplate{itemize subitem}{
 	\tikz{
-		\draw[fill=ExecusharesRed,draw=none] (0, 0) rectangle(0.075, 0.075);
-		\draw[fill=ExecusharesRed,draw=none] (0.075, 0.075) rectangle(0.15, 0.15);
-		\draw[fill=ExecusharesRed,draw=none] (0, 0.15) rectangle(0.075, 0.225);
+		\draw[fill=ExecusharesBlue,draw=none] (0, 0) rectangle(0.075, 0.075);
+		\draw[fill=ExecusharesBlue,draw=none] (0.075, 0.075) rectangle(0.15, 0.15);
+		\draw[fill=ExecusharesBlue,draw=none] (0, 0.15) rectangle(0.075, 0.225);
 	}
 }
 \fi
@@ -140,7 +140,7 @@
 		\ifnum\thepage=1\relax
 			% the title page
 			% draw the fills
-			\fill[color=ExecusharesRed] (0, 4cm) rectangle(\slidewidth,\slideheight);
+			\fill[color=ExecusharesBlue] (0, 4cm) rectangle(\slidewidth,\slideheight);
 
 			% draw the actual text
 			\node[anchor=south,text width=\slidewidth-1cm,inner xsep=0.5cm] at (0.5\slidewidth,4cm) {\color{ExecusharesWhite}\Huge\textbf{\inserttitle}};
@@ -153,7 +153,7 @@
 		\else
 			% NOT the title page
 			% title bar
-			\fill[color=ExecusharesRed] (0, \slideheight-1cm) rectangle(\slidewidth,\slideheight);
+			\fill[color=ExecusharesBlue] (0, \slideheight-1cm) rectangle(\slidewidth,\slideheight);
 
 			% swap the comment on these to add section titles to slide titles
 			%\node[anchor=north,text width=11.8cm,inner xsep=0.5cm,inner ysep=0.25cm] at (6.4cm,9.6cm) {\color{ExecusharesWhite}\Large\textbf{\insertsectionhead: \insertframetitle}};
@@ -209,7 +209,7 @@
 		\useasboundingbox (0,0) rectangle(\slidewidth,\slideheight);
 		%\fill[color=ExecusharesWhite] (0,0) rectangle(\the\paperwidth,\the\paperheight);
 		\fill[color=ExecusharesWhite] (-1cm, 2cm) rectangle (\slidewidth, \slideheight+0.1cm);
-		\fill[color=ExecusharesRed] (-1cm, 0.5\slideheight-1cm) rectangle(\slidewidth, 0.5\slideheight+1cm);
+		\fill[color=ExecusharesBlue] (-1cm, 0.5\slideheight-1cm) rectangle(\slidewidth, 0.5\slideheight+1cm);
 		\node[text width=\the\paperwidth-1cm,align=center] at (0.4\slidewidth, 0.5\slideheight) {\color{ExecusharesWhite}\Huge\textbf{\insertsection}};
 	\end{tikzpicture}
 }
