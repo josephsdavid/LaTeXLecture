@@ -34,8 +34,8 @@
 %\usepackage{sourcecodepro}
 
 % set colours
-\setbeamercolor{itemize item}{fg=ExecusharesRed}
-\setbeamercolor{enumerate item}{fg=ExecusharesRed}
+\setbeamercolor{itemize item}{fg=ExecusharesBlue}
+\setbeamercolor{enumerate item}{fg=ExecusharesBlue}
 \setbeamercolor{alerted text}{fg=ExecusharesBlue}
 \setbeamercolor{section in toc}{fg=ExecusharesBlack}
 
@@ -48,9 +48,9 @@
 % make the itemize bullets pixelated >
 \setbeamertemplate{itemize item}{
 	\tikz{
-		\draw[fill=ExecusharesRed,draw=none] (0, 0) rectangle(0.1, 0.1);
-		\draw[fill=ExecusharesRed,draw=none] (0.1, 0.1) rectangle(0.2, 0.2);
-		\draw[fill=ExecusharesRed,draw=none] (0, 0.2) rectangle(0.1, 0.3);
+		\draw[fill=ExecusharesBlue,draw=none] (0, 0) rectangle(0.1, 0.1);
+		\draw[fill=ExecusharesBlue,draw=none] (0.1, 0.1) rectangle(0.2, 0.2);
+		\draw[fill=ExecusharesBlue,draw=none] (0, 0.2) rectangle(0.1, 0.3);
 	}
 }
 % make the subitems also pixelated >, but a little smaller and red
@@ -164,7 +164,7 @@
 			\ifnum \value{showProgressBar}>0\relax%
 				% the the progress bar icon in the middle of the screen
 				\draw[fill=ExecusharesGrey,draw=none] (0cm,0cm) rectangle(\slidewidth,0.25cm);
-				\draw[fill=ExecusharesRed,draw=none] (0cm,0cm) rectangle(\progressbar@tmpdim,0.25cm);
+				\draw[fill=ExecusharesBlue,draw=none] (0cm,0cm) rectangle(\progressbar@tmpdim,0.25cm);
 
 				% bottom information
 				\node[anchor=south west] at(0cm,0.25cm) {\color{ExecusharesGrey}\tiny\vphantom{lp}\insertsection};
