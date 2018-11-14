@@ -1,0 +1,492 @@
+\documentclass[english]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage[titles]{tocloft}
+\renewcommand{\cftdot}{}
+\usepackage{fontspec}
+\setmainfont[Mapping=tex-text]{Gill Sans MT}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{fancybox}
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{subfloat}
+\usepackage{graphicx}
+\usepackage{amsmath}
+%\RequirePackage{color}
+%\RequirePackage[svgnames]{xcolor}
+%\definecolor{spYellow}{HTML}{ADAD00}
+\RequirePackage{listings}
+\usepackage{longtable}
+\usepackage{array,booktabs}
+\usepackage{bm}
+\usepackage{outlines}
+\usepackage{newfloat}
+\usepackage{caption}
+\DeclareFloatingEnvironment[fileext=frm,placement={!ht},name=Code]{Code}
+\captionsetup[Code]{labelfont=bf}
+\usepackage[font=small,format=plain,labelsep=period,
+labelfont=bf, justification=centerlast]{caption}
+% With this, we do \begin{Code} \caption{Code name} \ref{whatever} \begin{SAS or R} \end{SAS or R} \end{Code} to get the code in the TOC!
+
+% Now we make an environment for coding in SAS
+% We are going to build a new listings (code) environment!
+
+\usepackage{babel}
+\usepackage{pdfpages}
+\usepackage{tikz}
+\usepackage[buttonsize=1em]{animate}
+\usepackage[colorlinks=true,citecolor=blue,linkcolor=blue,filecolor=magenta,urlcolor=cyan]{hyperref}
+
+\begin{document}
+	% !Rnw weave = knitr
+	% !TeX program = xelatex
+	%First we define our chunk settings
+	
+	<<settings, echo=FALSE, message=FALSE>>=
+	library(knitr)
+	library(ggplot2)
+	library(tidyverse)
+	library(broom)
+	library(xtable)
+	library(investr)
+	library(animation)
+	library(htmltab)
+	library(SASmarkdown)
+	library(XML)
+	sas_enginesetup(sashtml=sashtml)
+	sasexe <- "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"
+	sasopts <- "-nosplash -ls 75"
+	opts_chunk$set(cache=T, autodep=TRUE)
+	opts_chunk$set()
+	opts_chunk$set(fig.width=4.5)
+	opts_chunk$set(fig.height=3)
+	#opts_chunk$set(background='white')
+	options(tikzDefaultEngine='xetex')
+	aniopts='controls,autoplay,loop'
+@
+\fancyhead[C]{David Josephs}
+\begin{titlepage}
+	\pagecolor{white}
+	\begin{center}
+		\vspace*{1cm}
+		
+		\Huge
+		% For font size, you have
+		% {\tiny }
+		% {\scriptsize }
+		% {\footnotesize }
+		% {\small }
+		% {\normalsize }
+		% {\large }
+		% {\Large }
+		% {\LARGE }
+		% {\huge }
+		%{\Huge }
+		% Which all multiply your default font size by some constant
+		\textbf{Homework 11}
+		
+		\vspace{0.5cm}
+		\LARGE
+Regression Diagnostics and Model Refinement
+
+		
+		\vspace{1.5cm}
+		
+		\textbf{David Josephs}
+		
+		\vspace{1.5cm}
+		% I put the SMU Logo here
+		\includegraphics[width=0.4\textwidth]{Logo}
+		
+		
+		\vspace{0.8cm}
+		
+		
+		
+		\Large
+		Southern Methodist University\\
+		%% \\ is a line break, vspace is vertical space. Useful to know
+		Masters in Data Science\\
+		\today
+		
+	\end{center}
+\end{titlepage}
+% TOC
+\tableofcontents
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{3}
+\listofCode
+\listoffigures
+\pagebreak
+\section{Testing Kleiber's Law}
+
+\subsection{Examining the Raw Data}
+First, we will plot the raw data as a scatterplot, to see if $MASS^{\frac{3}{4}}$ is a reasonable for the data. To do this, we will use the following SAS code:
+	\begin{Code}[H]
+		\caption{Plotting the Raw Data in SAS}
+\begin{center}
+	<<sascatter, engine="sashtml", engine.path=sasexe, engine.opts=sasopts,results='hide',warning=F,message=F,echo=-(1:5)>>=
+ods html path="c:\Users\david\Desktop\MSDS\MSDS6371\Homework\Week11\SASout" gpath="SASout" STYLE=STATISTICAL   body="rawscatter.html";
+PROC IMPORT DATAFILE="c:\Users\david\Desktop\MSDS\MSDS6371\Homework\Week11\Data\Metabolism.csv"
+OUT=metabolism
+DBMS=CSV
+REPLACE;
+data powermetabolism;
+set metabolism;
+powerMass=Mass**(3/4);
+Metab=Metab;
+run;
+proc sgplot data=powermetabolism noautolegend;
+title "Kleiber's Law";
+scatter x=powerMass y=Metab;
+xaxis label="Body Mass^(3/4) in kg" grid;
+yaxis label="Metabolic Rate in kg per Day" grid;
+run;
+@
+\end{center}
+\end{Code}
+Lets see what that graph looks like:
+\begin{figure}[H]
+	\caption{Scatter Plot of The Raw Data}
+	\label{fig:sasterplot1}
+	\begin{center}
+\includegraphics{SASout/sascatter.png}
+\par\end{center}
+\end{figure}
+
+From this graph, it does appear to be linear but it needs to be transformed a bit. a non transformed model will not fit, but in general it should fit.
+\subsection{Assumption Testing}
+To test the assumptions of the regression of the \emph{raw} data, the following SAS code was used:
+\begin{Code}[H]
+	\caption{Regression Diagnostics with SAS}
+	\label{cd:SASregdiagraw}
+<<sasassraw, engine="sashtml", engine.path=sasexe, engine.opts=sasopts,results='hide',echo=-(1:11)>>=
+ods html path="c:\Users\david\Desktop\MSDS\MSDS6371\Homework\Week11\SASout" gpath="SASout"
+STYLE=STATISTICAL  body="sasass.html";
+PROC IMPORT DATAFILE="c:\Users\david\Desktop\MSDS\MSDS6371\Homework\Week11\Data\Metabolism.csv"
+OUT=metabolism
+DBMS=CSV
+REPLACE;
+data powermetabolism;
+set metabolism;
+powerMass=Mass**(3/4);
+Metab=Metab;
+run;
+proc glm data=powermetabolism plots=all alpha=.05;
+model Metab=powerMass / CLPARM;
+run;
+@
+\end{Code}
+Lets check to see what this looks like in the following figures:
+\begin{figure}[H]
+	\caption{Diagnostic Plots on the Raw Metabolism Data}
+	\label{fig:SASdiagraw}
+	\begin{center}
+		\includegraphics[scale=..4]{SASout/sasassraw.png}
+	\end{center}
+\caption*{The first two plots,the residuals vs predicted values and the studentized residuals vs predicted values, show us that a lot of our residuals are extreme values. The Q-Q plot and histogram tells us are residuals are not normally distributed at all, which is pretty evident.}
+\end{figure}
+\begin{figure}[H]
+	\caption{Fit Plot}
+	\label{fig:SASfitRaw}
+	\begin{center}
+		\includegraphics[scale=0.6]{SASout/sasassraw2.png}
+	\end{center}
+\caption*{This scatterplot of our data with a linear fit as well as confidence and prediction intervals tells us our data is not very linear, as it is not a random cloud about the fit line.}
+\end{figure}
+\begin{figure}[H]
+	\caption{Residual vs Independent Variable Plot}
+	\label{fig:SASvarraw}
+	\begin{center}
+		\includegraphics[scale=0.6]{SASout/sasassraw1.png}
+	\end{center}
+\caption*{It is increasingly evident that our data is not linear, as the residuals do not follow a linear pattern at all, not clouding about the x axis. It is also evident, from the distance of the residuals to the x axis, that they do not have a constant variance/spread at all, which is not a good sign for the no-log model}
+\end{figure}
+It is clear from Figures \ref{fig:SASdiagraw}, \ref{fig:SASvarraw}, and \ref{fig:SASfitRaw} that the linear (no-log) model does not work. It is not linear, does not have constant variance/equal spread, and it is in no way normal. We will try a log-log transformation on the data to see if we can improve things! To do this we will use the following SAS code:
+\begin{Code}[H]
+	\caption{Log-Log Transformation in SAS}
+	\label{cd:loglog}
+	<<saslog, engine="sashtml", engine.path=sasexe, engine.opts=sasopts,results='hide',echo=-(1:11)>>=
+	ods html path="c:\Users\david\Desktop\MSDS\MSDS6371\Homework\Week11\SASout" gpath="SASout"
+	STYLE=STATISTICAL  body="saslog.html";
+	PROC IMPORT DATAFILE="c:\Users\david\Desktop\MSDS\MSDS6371\Homework\Week11\Data\Metabolism.csv"
+	OUT=metabolism
+	DBMS=CSV
+	REPLACE;
+	data powermetabolism;
+	set metabolism;
+	powerMass=Mass**(3/4);
+	Metab=Metab;
+	run;
+	data logmetabolism;
+	set powermetabolism;
+	logMass=log(powerMass);
+	logMetab=log(Metab);
+	run;
+	proc glm data=logmetabolism plots=all;
+	model logMetab=logMass /CLPARM;
+	run;
+	@
+\end{Code}
+To test our assumptions, we will examine the following figures, produced by Code \ref{cd:loglog}:
+
+\begin{figure}[H]
+	\caption{Diagnostic Plots of the Log-Log Transformed Data}
+	\label{fig:SASdiagrlog}
+	\begin{center}
+		\includegraphics[scale=.8]{SASout/saslog.png}
+	\end{center}
+	\caption*{The first two plots,the residuals vs predicted values and the studentized residuals vs predicted values, show us that we do not have a lot of extreme values. The Q-Q plot and histogram tells us are residuals are pretty normally distributed.}
+\end{figure}
+\begin{figure}[H]
+	\caption{Fit Plot of the Log-Log Transformed Data}
+	\label{fig:SASfitlog}
+	\begin{center}
+		\includegraphics[scale=0.6]{SASout/saslog2.png}
+	\end{center}
+	\caption*{This scatterplot of our data with a linear fit as well as confidence and prediction intervals tells us our data is pretty linear, a random cloud about the line within reasonable intervals.}
+\end{figure}
+\begin{figure}[H]
+	\caption{Residual vs Independent Variable Plot of the Log-Log Transformed Data}
+	\label{fig:SASvarlog}
+	\begin{center}
+		\includegraphics[scale=0.6]{SASout/saslog1.png}
+	\end{center}
+	\caption*{It is increasingly evident that our data is linear, as the residuals cloud about the x axis. It is also evident, from the distance of upper residuals to the lower ones, that they have an equal spread/constant variance.}
+\end{figure}
+It is clear from Figures \ref{fig:SASdiagrlog}, \ref{fig:SASvarlog}, and \ref{fig:SASfitlog} that the log-log model meets the assumptions of constant variance, normality, and linearity. We will assume independence.
+\subsection{Assessment of the Model}
+To assess our model, we will look at the p values and t statistics of the regression parameters. Those were produced in Code \ref{cd:loglog}, and are displayed in the following table:
+<<r tableguy,warning=F,message=F,results='asis',echo=F>>=
+tbls <- readHTMLTable('SASout/saslog.html')
+
+### reformat gross table names (have newline characters and spaces in them) ###
+tbls <- lapply(tbls, 
+function(x){
+names(x) <- gsub('\n|( ){1,}', '', names(x))
+x
+})
+
+### pull out only the tables that are actually tables ###
+# SAS seems to think that titles are tables as well #
+indx <- which(sapply(tbls, 
+function(x)(nrow(x)>1)))
+tbls <- tbls[indx]
+ok<-as.data.frame(tbls[3])
+colnames(ok)<-c('Parameter','Estimate','Standard Error', 't-Statistic','p-Value','Lower CI', 'Upper CI')
+print(xtable(ok,label='tab:ptsas',caption='p-Values and T-statistics of Regression Parameters'),booktabs=T,caption.placement='top',table.placement="H")
+@
+
+From table \ref{tab:ptsas}, it is clear to see that both our intercept and slope are statistically significant!
+\subsection{Regression Equation}
+The regression equation is $$ \mathrm{ln}\left(\widehat{\mathrm{metabolism}}\right)=\Sexpr{ok[1,2]}+\Sexpr{ok[2,2]}\mathrm{ln}\left(\widehat{\mathrm{mass}}^{\frac{3}{4}}\right)$$
+By unlogging (or raising e to everything), we can untransform the data. That is:
+ $$e^{\mathrm{ln}\left(\widehat{\mathrm{metabolism}}\right)}=e^{\Sexpr{ok[1,2]}+\Sexpr{ok[2,2]}\mathrm{ln}\left(\widehat{\mathrm{mass}}^{\frac{3}{4}}\right)}=e^{\Sexpr{ok[1,2]}}e^{\left[\mathrm{ln}\left(\widehat{\mathrm{mass}}^{\frac{3}{4}}\right)\right]^{\Sexpr{ok[2,2]}}}$$
+Or
+$$\widehat{\mathrm{metabolism}}=e^{\Sexpr{ok[1,2]}}\left(\widehat{\mathrm{mass}}^{\frac{3}{4}}\right)^{\Sexpr{ok[2,2]}}$$
+I am still not sure why we are testing it this way... Why do we not just use the normal mass and see if the exponent is .75 or not? 
+\subsection{Interpretation}
+The model states that the natural log of metabolism is equal to $\Sexpr{ok[1,2]}$ plus $\Sexpr{ok[2,2]}$ times the natural log of mass to three quarters. That says that if the natural log of mass to three over four were to increase by 1, the natural log of metabolism would increase by almost 1. If we unlog, we can say that a 1\% increase in mass to the three quarters leads to a .985\% increase in metabolism. A 95\% confidence interval for this is $\left[\Sexpr{ok[2,6]},\Sexpr{ok[2,7]}\right]$, meaning that a 1\% increase in mass to the three quarters leads to a percent increase in the \emph{median} of metabolism between those two values. The problem did not ask for a confidence interval on the intercept but you can see it in Table \ref{tab:ptsas}. Because one is contained in the confidence interval, we can say that mass to the three quarters is a good estimate of the metabolism.
+\subsection{Proportions}
+<<r rsquaresas,warning=F,message=F,results='asis',echo=F>>=
+print(xtable(readHTMLTable('SASout/saslog.html')[[3]],label='tab:prop',caption='Proportion explained by the model'),booktabs=T,caption.placement='top',table.placement="H")
+@
+$R^2$ is 0.965, which means 96.5\% of the variation is explained by the model. A good fit! Well done mr. Kleiber!
+\section{Autism Study}
+\subsection{Assumption Checking}
+To check the assumptions of the \emph{raw} data, the following R Code was used:
+\begin{Code}[H]
+	\caption{Plotting the Raw Data in R}
+<<r testing,warning=F,message=F>>=
+data<-read.csv("Data/Autism.csv")
+data<-data%>%mutate(logPrevalence=log(Prevalence))
+model1 <-lm(Prevalence~Year,data=data)
+pint<-predict(model1,interval="prediction",level=.95)
+new_df<-cbind(data,pint)
+g<-ggplot(new_df, aes(x=Year, y=Prevalence))+geom_point() +
+geom_line(aes(y=lwr), color = "red", linetype = "dashed")+
+geom_line(aes(y=upr), color = "red", linetype = "dashed")+
+geom_smooth(method=lm, se=TRUE,level=0.95)+
+theme_classic()
+resp<-ggplot(model1, aes(.fitted, .resid))+
+geom_point(aes(color = .resid)) +
+scale_color_gradient2(low = "blue", 
+mid = "gray",
+high = "red") +
+guides(color = FALSE)
+resp<-resp+
+stat_smooth(method="lm",se=F)+
+geom_hline(yintercept=0, 
+col="red", 
+linetype="dashed")
+resp<-resp+
+xlab("Fitted values")+
+ylab("Residuals")
+resp<-resp+theme_classic()+geom_segment(aes(y=0,x=.fitted,xend=.fitted, yend=.resid,
+alpha = 2*abs(.resid)))+guides(alpha=FALSE)
+resx<-ggplot(model1, aes(Year, .resid))+
+geom_point(aes(color = .resid)) +
+scale_color_gradient2(low = "blue", 
+mid = "gray",
+high = "red") +
+guides(color = FALSE)
+resx<-resx+
+stat_smooth(method="lm",se=F)+
+geom_hline(yintercept=0, 
+col="red", 
+linetype="dashed")
+resx<-resx+
+xlab("Year")+
+ylab("Residuals")
+resx<-resx+theme_classic()+geom_segment(aes(y=0,x=Year,xend=Year, yend=.resid,
+alpha = 2*abs(.resid)))+guides(alpha=FALSE)
+extraVal<-fortify(model1)
+ghist<-ggplot(model1,aes(x=.resid))+
+geom_histogram(bins=4,
+fill='gray22',
+color='ghostwhite')+
+theme_classic()
+ghist<-ghist+stat_function(fun=dnorm,
+color="forestgreen",args=list(mean=mean(extraVal$.resid),
+sd=sd(extraVal$.resid)),size=1)
+@
+\end{Code}
+This results in the following figures:
+\begin{figure}[H]
+	\caption{Plot of the Raw Fit}
+	\begin{center}
+<<fit_plotraw,dev='tikz',echo=F>>=
+g
+@
+\par\end{center}
+\end{figure}
+\begin{figure}[H]
+	\caption{Plot of the Raw Residuals vs Fitted Values}
+	\begin{center}
+<<resid_plotraw,dev='tikz',echo=F>>=
+resp
+@
+\par\end{center}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+	\caption{Plot of the Raw Residuals vs Year}
+	<<residx_plotraw,dev='tikz',echo=F>>=
+	resx
+	@
+	\par\end{center}
+\end{figure}
+\begin{figure}[H]
+	\caption{Histogram of the Raw Residuals}
+	\begin{center}
+	<<resid_histraw,dev='tikz',echo=F>>=
+	ghist
+	@
+	\par\end{center}
+\end{figure}
+As we can see, this data needs to be transformed! Lets log transform the Y axis! We do this with the following Code:
+\begin{Code}[H]
+	\caption{Plotting the Log-Linear Data in R}
+	<<r logtesting,warning=F,message=F>>=
+	model2 <-lm(logPrevalence~Year,data=data)
+	pint2<-predict(model2,interval="prediction",level=.95)
+	new_df<-cbind(data,pint2)
+	g2<-ggplot(new_df, aes(x=Year, y=logPrevalence))+geom_point() +
+	geom_line(aes(y=lwr), color = "red", linetype = "dashed")+
+	geom_line(aes(y=upr), color = "red", linetype = "dashed")+
+	geom_smooth(method=lm, se=TRUE,level=0.95)+
+	theme_classic()
+	resp2<-ggplot(model2, aes(.fitted, .resid))+
+	geom_point(aes(color = .resid)) +
+	scale_color_gradient2(low = "blue", 
+	mid = "gray",
+	high = "red") +
+	guides(color = FALSE)
+	resp2<-resp2+
+	stat_smooth(method="lm",se=F)+
+	geom_hline(yintercept=0, 
+	col="red", 
+	linetype="dashed")
+	resp2<-resp2+
+	xlab("Fitted values")+
+	ylab("Residuals")
+	resp2<-resp2+theme_classic()+geom_segment(aes(y=0,x=.fitted,xend=.fitted, yend=.resid,
+	alpha = 2*abs(.resid)))+guides(alpha=FALSE)
+	resx2<-ggplot(model2, aes(Year, .resid))+
+	geom_point(aes(color = .resid)) +
+	scale_color_gradient2(low = "blue", 
+	mid = "gray",
+	high = "red") +
+	guides(color = FALSE)
+	resx2<-resx2+
+	stat_smooth(method="lm",se=F)+
+	geom_hline(yintercept=0, 
+	col="red", 
+	linetype="dashed")
+	resx2<-resx2+
+	xlab("Year")+
+	ylab("Residuals")
+	resx2<-resx2+theme_classic()+geom_segment(aes(y=0,x=Year,xend=Year, yend=.resid,
+	alpha = 2*abs(.resid)))+guides(alpha=FALSE)
+	extraVal2<-fortify(model2)
+	ghist2<-ggplot(model2,aes(x=.resid))+
+	geom_histogram(bins=4,
+	fill='gray22',
+	color='ghostwhite')+
+	theme_classic()
+	ghist2<-ghist2+stat_function(fun=dnorm,
+	color="forestgreen",args=list(mean=mean(extraVal2$.resid),
+	sd=sd(extraVal2$.resid)),size=1)
+	@
+	\end{Code}
+	\begin{figure}[H]
+		\caption{Plot of the Logged Fit}
+		\begin{center}
+			<<fit_plotlog,dev='tikz',echo=F>>=
+			g2
+			@
+			\par\end{center}
+	\end{figure}
+	\begin{figure}[H]
+		\caption{Plot of the Logged Residuals vs Fitted Values}
+		\begin{center}
+			<<resid_plotlog,dev='tikz',echo=F>>=
+			resp2
+			@
+			\par\end{center}
+	\end{figure}
+	
+	\begin{figure}[H]
+		\begin{center}
+			\caption{Plot of the Logged Residuals vs Year}
+			<<residx_plotlog,dev='tikz',echo=F>>=
+			resx2
+			@
+			\par\end{center}
+	\end{figure}
+	\begin{figure}[H]
+		\caption{Histogram of the Logged Residuals}
+		\begin{center}
+			<<resid_histlog,dev='tikz',echo=F>>=
+			ghist2
+			@
+			\par\end{center}
+	\end{figure}
+This is a way better fit!
+\subsection{Model Assessment}
+Lets look at the model parameters!
+<<r modelparm,results='asis',warning=F,message=F,echo=F>>=
+print(xtable(tidy(model2,conf.int = T,conf.level = .95),label="tb:betas",caption="Hypothesis Test on Regression Parameters"),booktabs=TRUE,caption.placement='top',table.placement = "H")
+@
+\subsection{Regression Equation}
+The regression equation is:
+$$\mathrm{ln}\left(\widehat{\mathrm{Prevalence}}\right)=-408+.21\left(\widehat{\mathrm{Year}}\right)$$
+\subsection{Interpretation}
+A one unit increase in Year is associated with a multiplicative change of $e^.21$ in the median of Prevalence. A confidence interval for this is shown in Table 3, it is very narrow.
+\subsection{R squared}
+<<r rsquare>>=
+rsquare<-summary(model2)$r.squared
+@
+$R^2=\Sexpr{rsquare}$
+\end{document}
