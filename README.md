@@ -5,4 +5,6 @@ In this repository we have a lecture on a few reasons to use LaTeX, as well as a
 * Great place to start with latex https://github.com/egeerardyn/awesome-LaTeX
 * Get started with tikz vector graphics (also worth looking at pstricks) https://github.com/xiaohanyu/awesome-tikz
 * Yihui's amazing documentation on chunks https://yihui.name/knitr/options/
+
+
 Look here for inspiration, you can make some really cool documents with LaTeX, from just formatting to animated vector graphics and beyond, all pretty easily. Feel free to email me at josephsd@smu.edu any time with LaTeX and knitr based questions, or to say hi!
