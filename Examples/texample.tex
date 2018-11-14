@@ -1,5 +1,5 @@
-\documentclass[10pt,a4paper]{article}
-%\documentclass[runningheads]{llncs}
+%\documentclass[10pt,a4paper]{article}
+\documentclass[runningheads]{llncs}
 \usepackage{blindtext}
 \usepackage{lipsum}
 \usepackage{xstring}
@@ -27,49 +27,69 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage[colorlinks=true,citecolor=black,linkcolor=black,filecolor=magenta,urlcolor=cyan]{hyperref}
+
+
+
+
+
+
+
+
+
+
+
 \begin{document}
 	% paste in titling stuff
-%	\title{Contribution Title\thanks{Supported by organization x.}}
+	\title{Contribution Title\thanks{Supported by organization x.}}
 	%
 	%\titlerunning{Abbreviated paper title}
 	% If the paper title is too long for the running head, you can set
 	% an abbreviated paper title here
 	%
-%	\author{First Author\inst{1}\orcidID{0000-1111-2222-3333} \and
-%		Second Author\inst{2,3}\orcidID{1111-2222-3333-4444} \and
-%		Third Author\inst{3}\orcidID{2222--3333-4444-5555}}
+	\author{First Author\inst{1}\orcidID{0000-1111-2222-3333} \and
+		Second Author\inst{2,3}\orcidID{1111-2222-3333-4444} \and
+		Third Author\inst{3}\orcidID{2222--3333-4444-5555}}
 	%
-%	\authorrunning{F. Author et al.}
+	\authorrunning{F. Author et al.}
 	% First names are abbreviated in the running head.
 	% If there are more than two authors, 'et al.' is used.
 	%
-%	\institute{Princeton University, Princeton NJ 08544, USA \and
-%		Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
-%		\email{lncs@springer.com}\\
-%		\url{http://www.springer.com/gp/computer-science/lncs} \and
-%		ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
-%		\email{\{abc,lncs\}@uni-heidelberg.de}}
+	\institute{Princeton University, Princeton NJ 08544, USA \and
+		Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
+		\email{lncs@springer.com}\\
+		\url{http://www.springer.com/gp/computer-science/lncs} \and
+		ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
+		\email{\{abc,lncs\}@uni-heidelberg.de}}
 	%
-%	\maketitle              % typeset the header of the contribution
+	\maketitle              % typeset the header of the contribution
 	%
 	
-%	\begin{abstract}\loremnchars[3]{200}\keywords{First keyword  \and Second keyword \and Another keyword.} \end{abstract}
-%	\tableofcontents
-	\section{Text Modifiers}
-	Try typing:
+	\begin{abstract}\loremnchars[3]{200}\keywords{First keyword  \and Second keyword \and Another keyword.} \end{abstract}
+
+\textit{Somethnig in italics}
+
 	\begin{itemize}
 	\item\begin{verbatim*}\emph{}\end{verbatim*} for italics
 	\item\begin{verbatim*}\textbf{}\end{verbatim*} for bold
 	\item\begin{verbatim*}\textsc{}\end{verbatim*} for small caps
 	\end{itemize}
 	\blindtext
+	\emph{Italic}
+	\textbf{Bold}
+	\textsc{Small caps}
+	
 \section{\LaTeX   Math}
 Math can be delimited by \$ signs, or in special math environments! Lets try doing \emph{inline math}, \emph{display style math}, and a \emph{multiline} math environment. 
 \subsection{Doing Math}
 \loremnchars[5]{14}  
 % $\sum{\alpha^{\frac{\pi}{\sin{e}}}}$ 
+$\sum{\alpha^{\frac{pi}{2}}}$
 \loremnchars[5]{255}
 
+$$4+5=6$$
+\begin{equation}
+y _ { x x } = \frac { \partial ^ { 2 } y } { \partial x ^ { 2 } } = \left( \frac { \partial } { \partial \xi } + \frac { \partial } { \partial \eta } \right) \left( \frac { \partial y } { \partial \xi } + \frac { \partial y } { \partial \eta } \right) = \frac { \partial ^ { 2 } y } { \partial \xi ^ { 2 } } + 2 \frac { \partial ^ { 2 } y } { \partial \xi \partial \eta } + \frac { \partial ^ { 2 } y } { \partial \eta ^ { 2 } }
+\end{equation}
 %$\dot { \omega } _ { n } ^ { \prime \prime }$, the source term is defined as:
 % or do naver stokes
 % try $$ and begin equation
@@ -77,8 +97,14 @@ Math can be delimited by \$ signs, or in special math environments! Lets try doi
 
 Our Hypothesis can be defined as:
 % Use Align environment!
-
+\begin{align}
+H_0: & \mu=0 \\
+H_1:& \mu \neq 0
+\end{align}
 \section{Tables}
+
+
+
 \begin{table}[H]
 	\caption{A table}
 	\label{tb:something}
@@ -102,14 +128,15 @@ Our Hypothesis can be defined as:
 \begin{figure}[H]
 	\label{fig:another}
 	\begin{center}
-		\includegraphics[scale=.2]{Logo}
+		\includegraphics[scale=.2]{Images/Logo}
 	\end{center}
 \caption{The SMU Logo}
 	\end{figure}
 \section{Cross Referencing and Table of Contents!}
  In Table \ref{tb:something} we see something. \\ In Figure \ref{fig:another}, we see another thing
  \section{Citations}
- This was a work of spending hours combing through the knitr \cite{knitr} documentation
+ This was a work of spending hours combing through the knitr \cite{knitr} documentation \cite{Astro}
+ 
   \bibliographystyle{splncs04}
   \bibliography{thebib}
  
